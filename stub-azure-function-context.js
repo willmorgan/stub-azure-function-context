@@ -4,7 +4,8 @@ const logger = console;
 
 function wrapConsole(level) {
     return function wrappedConsole() {
-        return logger[level].apply(console, ['stub-context'].concat(arguments));
+        // eslint-disable-next-line security/detect-object-injection
+        return logger[level].apply(logger, arguments);
     };
 }
 
