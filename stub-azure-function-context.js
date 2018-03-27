@@ -16,6 +16,7 @@ const defaultTriggers = {
         headers: {
             'user-agent': 'stub-azure-function-context.js',
         },
+        params: {},
         body: {},
     },
 };
@@ -44,7 +45,7 @@ function stubContext(functionUnderTest, triggers = defaultTriggers, outputs = de
                 ...triggers,
                 ...outputs,
             },
-            log: () => logger.log.apply(console, arguments),
+            log: function testLog() { return logger.log.apply(console, Array.from(arguments)); },
             done: (err = null, propertyBag = {}) => resolve({ context, err, propertyBag }),
         };
         context.log.error = wrapConsole('error');

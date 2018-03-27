@@ -1,0 +1,32 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "mocha": true,
+    "node": true
+  },
+  "rules": {
+    "camelcase": ["off"],
+    "comma-dangle": ["error", "always-multiline"],
+    "indent": ["error", 4],
+    "no-mixed-operators": ["off"],
+    "no-multiple-empty-lines": ["error"],
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["context"] } ],
+    "no-plusplus": ["off"],
+    "quote-props": ["error", "consistent-as-needed"]
+  },
+  "plugins": [
+    "security"
+  ],
+  "extends": [
+    "airbnb-base/legacy",
+    "plugin:security/recommended"
+  ]
+
+}
