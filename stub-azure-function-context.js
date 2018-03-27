@@ -31,8 +31,8 @@ const defaultOutputs = {
 /**
  * Implements: https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object
  * @param {function} functionUnderTest - function to test
- * @param {{}} triggers - an object with one or more keys (eg: req) whose values are probably objects
- * @param {{}} outputs - an object with one or more keys (eg: res)
+ * @param {{}} triggers - object keyed by trigger name
+ * @param {{}} outputs - object keyed by output name
  * @returns {Promise}
  */
 function stubContext(functionUnderTest, triggers = defaultTriggers, outputs = defaultOutputs) {
