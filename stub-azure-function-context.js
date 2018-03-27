@@ -35,7 +35,7 @@ const defaultOutputs = {
  * @param {{}} outputs - an object with one or more keys (eg: res)
  * @returns {Promise}
  */
-function stubAzureFunctionContext(functionUnderTest, triggers = defaultTriggers, outputs = defaultOutputs) {
+function stubContext(functionUnderTest, triggers = defaultTriggers, outputs = defaultOutputs) {
     return new Promise((resolve, reject) => {
         const context = {
             ...triggers,
@@ -60,5 +60,5 @@ function stubAzureFunctionContext(functionUnderTest, triggers = defaultTriggers,
 }
 
 module.exports = {
-    stubAzureFunctionContext,
+    stubContext,
 };

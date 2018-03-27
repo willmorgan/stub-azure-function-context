@@ -12,7 +12,7 @@ as in your `function.json`.
 If your function under test does not call `context.done`, then your test will time out. This is intended functionality
 so that you can find cases where you don't return back to the Function Runtime.
 
-`stubAzureFunctionContext` resolves with an object containing:
+`stubContext` resolves with an object containing:
 
 ```
 {
@@ -35,17 +35,17 @@ None of that `silly` stuff ;-)
 
 ```js
 
-const { stubAzureFunctionContext } = require('stub-azure-function-context');
+const { stubContext } = require('stub-azure-function-context');
 
 const functionToTest = require('../function-under-test');
 
 describe('app code', () => {
 	it('returns 200', async () => {
-	    const { context, err, propertyBag, } = await stubAzureFunctionContext(functionToTest);
+	    const { context, err, propertyBag, } = await stubContext(functionToTest);
 	    expect(context).to.have.nested.property('res.status', 200);
 	});
 	it('returns 200 in promise/a+ style', (done) => {
-		stubAzureFunctionContext(functionToTest)
+		stubContext(functionToTest)
 			.then(({ context, err, propertyBag }) => {
 				expect(context).to.have.nested.property('res.status', 200);
 				done();
@@ -53,7 +53,7 @@ describe('app code', () => {
 			.catch(done);
 	});
 	it('change trigger values before calling your function under test', async () => {
-		const { context } = await stubAzureFunctionContext((context, req, ...otherTriggers) => {
+		const { context } = await stubContext((context, req, ...otherTriggers) => {
 		    req.body = { 'helpful': 'test object' };
 		    return functionToTest(context, req, ...otherTriggers);
 		});
