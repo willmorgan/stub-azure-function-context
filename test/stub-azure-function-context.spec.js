@@ -85,7 +85,7 @@ describe('stub-azure-function-context', () => {
                 expect(oldRes).not.to.equal(context.res);
                 expect(oldReq).not.to.equal(req);
                 context.done();
-            })
+            });
         });
     });
 });

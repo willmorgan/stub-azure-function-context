@@ -40,10 +40,10 @@ const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
  */
 function stubContext(functionUnderTest, triggers, outputs) {
     if (triggers === undefined) {
-        triggers = deepCopy(defaultTriggers);
+        triggers = deepCopy(defaultTriggers); // eslint-disable-line no-param-reassign
     }
     if (outputs === undefined) {
-        outputs = deepCopy(defaultOutputs);
+        outputs = deepCopy(defaultOutputs); // eslint-disable-line no-param-reassign
     }
     return new Promise((resolve, reject) => {
         const context = {
