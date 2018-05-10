@@ -73,5 +73,19 @@ describe('stub-azure-function-context', () => {
             });
             expect(logMainSpy.called).to.equal(true, 'Expected main context.log method to call');
         });
+        it('copies in the default outputs/triggers if none is passed', async () => {
+            let oldRes;
+            let oldReq;
+            await stubContext((context, req) => {
+                oldRes = context.res;
+                oldReq = req;
+                context.done();
+            });
+            await stubContext((context, req) => {
+                expect(oldRes).not.to.equal(context.res);
+                expect(oldReq).not.to.equal(req);
+                context.done();
+            })
+        });
     });
 });

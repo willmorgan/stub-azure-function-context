@@ -29,6 +29,8 @@ const defaultOutputs = {
     },
 };
 
+const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
+
 /**
  * Implements: https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object
  * @param {function} functionUnderTest - function to test
@@ -36,7 +38,13 @@ const defaultOutputs = {
  * @param {{}} outputs - object keyed by output name
  * @returns {Promise}
  */
-function stubContext(functionUnderTest, triggers = defaultTriggers, outputs = defaultOutputs) {
+function stubContext(functionUnderTest, triggers, outputs) {
+    if (triggers === undefined) {
+        triggers = deepCopy(defaultTriggers);
+    }
+    if (outputs === undefined) {
+        outputs = deepCopy(defaultOutputs);
+    }
     return new Promise((resolve, reject) => {
         const context = {
             ...triggers,
