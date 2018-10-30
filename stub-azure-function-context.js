@@ -1,8 +1,13 @@
 'use strict';
 
-const logger = console;
+let logger = console;
 
-function wrapConsole(level) {
+function setContextLogger(newLogger) {
+    logger = newLogger;
+}
+
+function wrapConsole(wrapLevel) {
+    const level = (logger === console && wrapLevel === 'verbose') ? 'debug' : wrapLevel;
     return function wrappedConsole() {
         // eslint-disable-next-line security/detect-object-injection
         return logger[level].apply(logger, arguments);
@@ -57,9 +62,9 @@ function stubContext(functionUnderTest, triggers, outputs) {
             done: (err = null, propertyBag = {}) => resolve({ context, err, propertyBag }),
         };
         context.log.error = wrapConsole('error');
-        context.log.info = wrapConsole('log');
+        context.log.info = wrapConsole('info');
         context.log.warn = wrapConsole('warn');
-        context.log.verbose = wrapConsole('debug');
+        context.log.verbose = wrapConsole('verbose');
         try {
             const result = functionUnderTest(context, ...Object.values(triggers));
             // async func
@@ -74,4 +79,5 @@ function stubContext(functionUnderTest, triggers, outputs) {
 
 module.exports = {
     stubContext,
+    setContextLogger,
 };

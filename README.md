@@ -24,22 +24,26 @@ From 1.0.3 this library supports endpoint handlers returning Promise objects, an
 }
 ```
 
-Logging goes out to `console`. Only the methods defined in the developer guide are mentioned:
+By default, logging uses `console` as a backend, although you can import and use `setContextLogger` to set your own.
+
+Only the methods defined in the developer guide are available in the `stubContext` call:
 
   * `error`
   * `warn`
   * `info`
   * `verbose`
 
-None of that `silly` stuff ;-)
 
 ### Usage examples:
 
 ```js
 
-const { stubContext } = require('stub-azure-function-context');
-
+const { stubContext, setContextLogger } = require('stub-azure-function-context');
 const functionToTest = require('../function-under-test');
+
+// Optional step to direct context.log output elsewhere:
+const logger = require('./your-own-logger');
+setContextLogger(logger);
 
 describe('app code', () => {
 	it('returns 200', async () => {

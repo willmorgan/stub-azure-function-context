@@ -2,9 +2,9 @@
 
 /* eslint-disable security/detect-object-injection */
 
-const { stubContext } = require('../stub-azure-function-context');
+const { stubContext, setContextLogger } = require('../stub-azure-function-context');
 const { expect } = require('chai');
-const { spy } = require('sinon');
+const { spy, stub } = require('sinon');
 const {
     httpFunctionOK,
     httpFunctionError,
@@ -112,6 +112,26 @@ describe('stub-azure-function-context', () => {
                 });
             });
             expect(context.res.body).to.equal('OK');
+        });
+    });
+    describe('.setContextLogger', () => {
+        const logMethods = ['info', 'warn', 'error', 'verbose'];
+        let testLogger = {};
+        beforeEach('set to another logger', () => {
+            testLogger.log = stub();
+            logMethods.forEach((method) => {
+                testLogger[method] = stub();
+            });
+            setContextLogger(testLogger);
+        });
+        afterEach('restore logger', () => {
+            setContextLogger(console);
+        });
+        it('uses our test logger', async () => {
+            await stubContext(httpFunctionLogs);
+            expect(logMethods).to.satisfy((methods) => {
+                return methods.every((method) => testLogger[method].calledOnce);
+            });
         });
     });
 });
