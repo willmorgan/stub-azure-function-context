@@ -34,8 +34,8 @@ const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 /**
  * Implements: https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object
  * @param {function} functionUnderTest - function to test
- * @param {{}} triggers - object keyed by trigger name
- * @param {{}} outputs - object keyed by output name
+ * @param {{}} [triggers] - object keyed by trigger name
+ * @param {{}} [outputs] - object keyed by output name
  * @returns {Promise}
  */
 function stubContext(functionUnderTest, triggers, outputs) {
