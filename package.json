@@ -23,7 +23,7 @@
     "testing",
     "unit"
   ],
-  "author": "",
+  "author": "Will Morgan",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/willmorgan/stub-azure-function-context/issues"
