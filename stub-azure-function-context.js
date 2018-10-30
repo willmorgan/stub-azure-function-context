@@ -64,7 +64,7 @@ function stubContext(functionUnderTest, triggers, outputs) {
             const result = functionUnderTest(context, ...Object.values(triggers));
             // async func
             if (result && typeof result.then === 'function') {
-                result.then(context.done);
+                result.then(context.done, context.done);
             }
         } catch (e) {
             reject(e);
