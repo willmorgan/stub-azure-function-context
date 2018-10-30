@@ -6,6 +6,11 @@
   "directories": {
     "test": "test"
   },
+  "files": [
+    "stub-azure-function-context.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
     "lint-fix": "eslint -c .eslintrc.json --ignore-path .eslintignore ./ --fix",
