@@ -61,7 +61,11 @@ function stubContext(functionUnderTest, triggers, outputs) {
         context.log.warn = wrapConsole('warn');
         context.log.verbose = wrapConsole('debug');
         try {
-            functionUnderTest(context, ...Object.values(triggers));
+            const result = functionUnderTest(context, ...Object.values(triggers));
+            // async func
+            if (result && typeof result.then === 'function') {
+                result.then(context.done);
+            }
         } catch (e) {
             reject(e);
         }
