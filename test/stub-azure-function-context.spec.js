@@ -87,5 +87,24 @@ describe('stub-azure-function-context', () => {
                 context.done();
             });
         });
+        it('works with async functions', async () => {
+            const { context } = await stubContext(async (ctx) => {
+                Object.assign(ctx.res, {
+                    body: 'OK',
+                });
+            });
+            expect(context.res.body).to.equal('OK');
+        });
+        it('works with promises', async () => {
+            const { context } = await stubContext((ctx) => {
+                return new Promise((resolve) => {
+                    Object.assign(ctx.res, {
+                        body: 'OK',
+                    });
+                    resolve();
+                });
+            });
+            expect(context.res.body).to.equal('OK');
+        });
     });
 });
