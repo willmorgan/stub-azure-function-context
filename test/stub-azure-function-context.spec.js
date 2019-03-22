@@ -120,6 +120,16 @@ describe('stub-azure-function-context', () => {
             });
             expect(context.res.body).to.equal('OK');
         });
+        it('sets the correct return binding for async', async () => {
+            const { context } = await stubContext(async () => {
+                return {
+                    body: 'test',
+                };
+            });
+            expect(context.bindings.$return).to.deep.equal({
+                body: 'test',
+            });
+        });
     });
     describe('.setContextLogger', () => {
         const logMethods = ['info', 'warn', 'error', 'verbose'];

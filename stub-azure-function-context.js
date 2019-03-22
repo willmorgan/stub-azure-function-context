@@ -69,7 +69,13 @@ function stubContext(functionUnderTest, triggers, outputs) {
             const result = functionUnderTest(context, ...Object.values(triggers));
             // async func
             if (result && typeof result.then === 'function') {
-                result.then(context.done, context.done);
+                result.then((val) => {
+                    // see: https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#exporting-an-async-function
+                    Object.assign(context.bindings, {
+                        $return: val,
+                    });
+                    context.done();
+                }).catch(context.done);
             }
         } catch (e) {
             context.done(e);
