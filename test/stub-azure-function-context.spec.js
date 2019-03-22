@@ -87,6 +87,13 @@ describe('stub-azure-function-context', () => {
                 context.done();
             });
         });
+        it('handles thrown errors', async () => {
+            const chuckable = new Error('Unhandled error');
+            const { err } = await stubContext(() => {
+                throw chuckable;
+            });
+            expect(err).to.equal(chuckable);
+        });
         it('works with async functions which succeed', async () => {
             const { context } = await stubContext(async (ctx) => {
                 Object.assign(ctx.res, {

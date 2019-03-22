@@ -50,7 +50,7 @@ function stubContext(functionUnderTest, triggers, outputs) {
     if (outputs === undefined) {
         outputs = deepCopy(defaultOutputs); // eslint-disable-line no-param-reassign
     }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const context = {
             ...triggers,
             ...outputs,
@@ -72,7 +72,7 @@ function stubContext(functionUnderTest, triggers, outputs) {
                 result.then(context.done, context.done);
             }
         } catch (e) {
-            reject(e);
+            context.done(e);
         }
     });
 }
