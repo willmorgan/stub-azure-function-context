@@ -87,6 +87,13 @@ describe('stub-azure-function-context', () => {
                 context.done();
             });
         });
+        it('handles thrown errors', async () => {
+            const chuckable = new Error('Unhandled error');
+            const { err } = await stubContext(() => {
+                throw chuckable;
+            });
+            expect(err).to.equal(chuckable);
+        });
         it('works with async functions which succeed', async () => {
             const { context } = await stubContext(async (ctx) => {
                 Object.assign(ctx.res, {
@@ -112,6 +119,16 @@ describe('stub-azure-function-context', () => {
                 });
             });
             expect(context.res.body).to.equal('OK');
+        });
+        it('sets the correct return binding for async', async () => {
+            const { context } = await stubContext(async () => {
+                return {
+                    body: 'test',
+                };
+            });
+            expect(context.bindings.$return).to.deep.equal({
+                body: 'test',
+            });
         });
     });
     describe('.setContextLogger', () => {

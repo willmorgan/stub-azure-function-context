@@ -50,7 +50,7 @@ function stubContext(functionUnderTest, triggers, outputs) {
     if (outputs === undefined) {
         outputs = deepCopy(defaultOutputs); // eslint-disable-line no-param-reassign
     }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const context = {
             ...triggers,
             ...outputs,
@@ -69,10 +69,16 @@ function stubContext(functionUnderTest, triggers, outputs) {
             const result = functionUnderTest(context, ...Object.values(triggers));
             // async func
             if (result && typeof result.then === 'function') {
-                result.then(context.done, context.done);
+                result.then((val) => {
+                    // see: https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#exporting-an-async-function
+                    Object.assign(context.bindings, {
+                        $return: val,
+                    });
+                    context.done();
+                }).catch(context.done);
             }
         } catch (e) {
-            reject(e);
+            context.done(e);
         }
     });
 }
