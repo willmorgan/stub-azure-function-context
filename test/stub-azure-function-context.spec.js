@@ -2,9 +2,9 @@
 
 /* eslint-disable security/detect-object-injection */
 
-const { stubContext } = require('../stub-azure-function-context');
+const { stubContext, setContextLogger } = require('../stub-azure-function-context');
 const { expect } = require('chai');
-const { spy } = require('sinon');
+const { spy, stub } = require('sinon');
 const {
     httpFunctionOK,
     httpFunctionError,
@@ -85,6 +85,69 @@ describe('stub-azure-function-context', () => {
                 expect(oldRes).not.to.equal(context.res);
                 expect(oldReq).not.to.equal(req);
                 context.done();
+            });
+        });
+        it('handles thrown errors', async () => {
+            const chuckable = new Error('Unhandled error');
+            const { err } = await stubContext(() => {
+                throw chuckable;
+            });
+            expect(err).to.equal(chuckable);
+        });
+        it('works with async functions which succeed', async () => {
+            const { context } = await stubContext(async (ctx) => {
+                Object.assign(ctx.res, {
+                    body: 'OK',
+                });
+            });
+            expect(context.res.body).to.equal('OK');
+        });
+        it('works with async functions which throw', async () => {
+            const chuckable = new Error('Unhandled error');
+            const { err } = await stubContext(async () => {
+                throw chuckable;
+            });
+            expect(err).to.equal(chuckable);
+        });
+        it('works with promises', async () => {
+            const { context } = await stubContext((ctx) => {
+                return new Promise((resolve) => {
+                    Object.assign(ctx.res, {
+                        body: 'OK',
+                    });
+                    resolve();
+                });
+            });
+            expect(context.res.body).to.equal('OK');
+        });
+        it('sets the correct return binding for async', async () => {
+            const { context } = await stubContext(async () => {
+                return {
+                    body: 'test',
+                };
+            });
+            expect(context.bindings.$return).to.deep.equal({
+                body: 'test',
+            });
+        });
+    });
+    describe('.setContextLogger', () => {
+        const logMethods = ['info', 'warn', 'error', 'verbose'];
+        let testLogger = {};
+        beforeEach('set to another logger', () => {
+            testLogger.log = stub();
+            logMethods.forEach((method) => {
+                testLogger[method] = stub();
+            });
+            setContextLogger(testLogger);
+        });
+        afterEach('restore logger', () => {
+            setContextLogger(console);
+        });
+        it('uses our test logger', async () => {
+            await stubContext(httpFunctionLogs);
+            expect(logMethods).to.satisfy((methods) => {
+                return methods.every((method) => testLogger[method].calledOnce);
             });
         });
     });

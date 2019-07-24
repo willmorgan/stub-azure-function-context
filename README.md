@@ -4,42 +4,46 @@
 
 Aims to implement the context object as described on the [Azure Functions JavaScript Developer Guide](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object).
 
+### Usage
+
 By default the behaviour assumes a `req` HTTP trigger and a `res` HTTP output, but if you have more exotic config, then
 you can set that up!
 
-
-NB: if you follow the "ordered argument" pattern then you'll need to define the triggers/outputs in the same order
+If you follow the "ordered argument" pattern then you'll need to define the triggers/outputs in the same order
 as in your `function.json`.
 
-If your function under test does not call `context.done`, then your test will time out. This is intended functionality
-so that you can find cases where you don't return back to the Function Runtime.
+From 1.0.3 this library supports endpoint handlers returning Promise objects, and by extension, the async/await style.
 
 `stubContext` resolves with an object containing:
 
 ```
 {
     context: context, // the actual stubbed context object after your function manipulates it
-    err: null|Error,  // any error you passed to context.done, like: context.done(new Error("Oops"))
-    propertyBag: {},  // an object of any overrides you want to make on your outputs
+    err: null|Error,  // any error thrown or passed to context.done; eg: context.done(new Error("Oops"))
+    propertyBag: {},  // object of any overrides you want to make on your outputs
 }
 ```
 
-Logging goes out to `console`. Only the methods defined in the developer guide are mentioned:
+By default, logging uses `console` as a backend, although you can import and use `setContextLogger` to set your own.
+
+Only the methods defined in the developer guide are available in the `stubContext` call:
 
   * `error`
   * `warn`
   * `info`
   * `verbose`
 
-None of that `silly` stuff ;-)
 
 ### Usage examples:
 
 ```js
 
-const { stubContext } = require('stub-azure-function-context');
-
+const { stubContext, setContextLogger } = require('stub-azure-function-context');
 const functionToTest = require('../function-under-test');
+
+// Optional step to direct context.log output elsewhere:
+const logger = require('./your-own-logger');
+setContextLogger(logger);
 
 describe('app code', () => {
 	it('returns 200', async () => {
