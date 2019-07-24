@@ -1,5 +1,7 @@
 'use strict';
 
+const uuid = require('uuid/v4');
+
 let logger = console;
 
 function setContextLogger(newLogger) {
@@ -83,7 +85,79 @@ function stubContext(functionUnderTest, triggers, outputs) {
     });
 }
 
+/**
+ * Create a stub context from a binding definition - currently only supports queueTriggers
+ *
+ * @param {function} functionUnderTest
+ * @param {[{}]} bindingDefinitions The binding definitions as would be defined in function.json
+ * @param incomingTrigger The incoming trigger data (eg: request object or queue message)
+ * @returns {Promise<{}>}
+ */
+function stubContextFromBindingDefinition(functionUnderTest, bindingDefinitions, incomingTrigger) {
+    const triggerDefinition = bindingDefinitions.find((definition) => {
+        return definition.direction.toLowerCase() === 'in';
+    });
+    const outputDefinition = bindingDefinitions.find((definition) => {
+        return definition.direction.toLowerCase() === 'out';
+    });
+    const invocationId = uuid();
+    const bindings = {};
+    switch (triggerDefinition.type) {
+    case 'queueTrigger':
+        Object.assign(bindings, {
+            [triggerDefinition.name]: incomingTrigger.messageText,
+        });
+        break;
+    default:
+        throw new Error(`Binding type '${triggerDefinition.type}' not currently supported, use stubContext instead`);
+    }
+    const bindingData = {
+        invocationId,
+        ...incomingTrigger,
+        sys: {
+            methodName: '',
+            utcName: (new Date()).toJSON(),
+            randGuid: uuid(),
+        },
+    };
+    return new Promise((resolve) => {
+        const context = {
+            invocationId,
+            executionContext: {
+                invocationId,
+                // functionName: '',
+                // functionDirectory: '',
+            },
+            bindings,
+            log: function testLog() { return logger.log.apply(console, Array.from(arguments)); },
+            bindingData,
+            bindingDefinitions,
+            done: (err = null, propertyBag = {}) => resolve({ context, err, propertyBag }),
+        };
+        context.log.error = wrapConsole('error');
+        context.log.info = wrapConsole('info');
+        context.log.warn = wrapConsole('warn');
+        context.log.verbose = wrapConsole('verbose');
+        try {
+            const result = functionUnderTest(context, bindings[triggerDefinition.name]);
+            if (result && typeof result.then === 'function') {
+                result.then((val) => {
+                    if (outputDefinition && outputDefinition.name) {
+                        Object.assign(context.bindings, {
+                            [outputDefinition.name]: val,
+                        });
+                    }
+                    context.done();
+                }).catch(context.done);
+            }
+        } catch (e) {
+            context.done(e);
+        }
+    });
+}
+
 module.exports = {
     stubContext,
+    stubContextFromBindingDefinition,
     setContextLogger,
 };
