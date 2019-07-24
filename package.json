@@ -1,6 +1,6 @@
 {
   "name": "stub-azure-function-context",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Provides an object similar to Function Runtime's context for use in unit testing",
   "main": "stub-azure-function-context.js",
   "directories": {
