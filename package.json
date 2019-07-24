@@ -42,5 +42,8 @@
     "eslint-plugin-security": "^1.4.0",
     "mocha": "^5.1.1",
     "sinon": "^4.5.0"
+  },
+  "dependencies": {
+    "uuid": "^3.3.2"
   }
 }
