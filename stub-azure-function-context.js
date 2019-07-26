@@ -102,10 +102,25 @@ function stubContextFromBindingDefinition(functionUnderTest, bindingDefinitions,
     });
     const invocationId = uuid();
     const bindings = {};
+    const normalisedBindingData = {};
     switch (triggerDefinition.type) {
     case 'queueTrigger':
         Object.assign(bindings, {
             [triggerDefinition.name]: incomingTrigger.messageText,
+        });
+        // map an actual queue message to binding names
+        Object.entries({
+            messageText: 'queueTrigger',
+            dequeueCount: 'dequeueCount',
+            expirationTime: 'expirationTime',
+            messageId: 'id',
+            insertionTime: 'insertionTime',
+            timeNextVisible: 'nextVisibleTime',
+            popReceipt: 'popReceipt',
+        }).forEach(([from, to]) => {
+            Object.assign(normalisedBindingData, {
+                [to]: incomingTrigger[from],
+            });
         });
         break;
     default:
@@ -113,7 +128,7 @@ function stubContextFromBindingDefinition(functionUnderTest, bindingDefinitions,
     }
     const bindingData = {
         invocationId,
-        ...incomingTrigger,
+        ...normalisedBindingData,
         sys: {
             methodName: '',
             utcName: (new Date()).toJSON(),
