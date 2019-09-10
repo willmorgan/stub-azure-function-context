@@ -93,7 +93,11 @@ function stubContext(functionUnderTest, triggers, outputs) {
  * @param incomingTrigger The incoming trigger data (eg: request object or queue message)
  * @returns {Promise<{}>}
  */
-function stubContextFromBindingDefinition(functionUnderTest, bindingDefinitions, incomingTrigger) {
+function stubContextFromBindingDefinition(
+    functionUnderTest,
+    bindingDefinitions,
+    incomingTrigger = {},
+) {
     const triggerDefinition = bindingDefinitions.find((definition) => {
         return definition.direction.toLowerCase() === 'in';
     });
@@ -121,6 +125,14 @@ function stubContextFromBindingDefinition(functionUnderTest, bindingDefinitions,
             Object.assign(normalisedBindingData, {
                 [to]: incomingTrigger[from],
             });
+        });
+        break;
+    case 'timerTrigger':
+        Object.assign(bindings, {
+            [triggerDefinition.name]: incomingTrigger,
+        });
+        Object.assign(normalisedBindingData, {
+            ...bindings,
         });
         break;
     default:
