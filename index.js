@@ -3,7 +3,10 @@ const { stubContextFromBindingDefinitions, setContextLogger } = require('./lib/c
 const {
     blob: { createTrigger: createBlobTrigger },
     http: { createTrigger: createHttpTrigger },
-    queue: { createTrigger: createQueueTrigger },
+    queue: {
+        createTrigger: createQueueTrigger,
+        createTriggerFromQueueMessage: createQueueTriggerFromMessage,
+    },
     table: { createTrigger: createTableTrigger },
     timer: { createTrigger: createTimerTrigger },
 } = require('./lib/bindings');
@@ -16,6 +19,7 @@ module.exports = {
     createBlobTrigger,
     createHttpTrigger,
     createQueueTrigger,
+    createQueueTriggerFromMessage,
     createTableTrigger,
     createTimerTrigger,
 };
