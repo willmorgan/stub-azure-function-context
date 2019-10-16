@@ -19,7 +19,7 @@ describe('runStubFunctionFromBindings', () => {
                 'bindingData',
                 'bindingDefinitions',
                 'req',
-                'innvocationId',
+                'invocationId',
                 'done',
             );
         });
@@ -53,7 +53,7 @@ describe('runStubFunctionFromBindings', () => {
                 'bindingData',
                 'bindingDefinitions',
                 'req',
-                'innvocationId',
+                'invocationId',
                 'done',
             );
         });
