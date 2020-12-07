@@ -9,7 +9,7 @@ and allow developers to call azure functions for testing purposes.
 
 This library works by accepting a set of binding definitions much like you would place in the `function.json` file.
 
-The is support for the different [input styles](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#inputs)
+There is support for the different [input styles](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#inputs)
  which allow for:
 
 1. Ordered arguments to your function, eg: `function (context, myTrigger, myInput, myOtherInput, ...)`
