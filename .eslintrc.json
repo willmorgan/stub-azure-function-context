@@ -1,9 +1,10 @@
 {
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true
-    },
     "sourceType": "module"
   },
   "env": {
@@ -21,12 +22,9 @@
     "no-plusplus": ["off"],
     "quote-props": ["error", "consistent-as-needed"]
   },
-  "plugins": [
-    "security"
-  ],
   "extends": [
-    "airbnb-base/legacy",
-    "plugin:security/recommended"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ]
-
 }

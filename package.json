@@ -2,18 +2,19 @@
   "name": "stub-azure-function-context",
   "version": "2.0.0-alpha.7",
   "description": "Provides an object similar to Function Runtime's context for use in unit testing",
-  "main": "index.js",
+  "main": "dist/index.js",
   "directories": {
     "test": "test"
   },
   "files": [
-    "lib/",
-    "stub-azure-function-context.js"
+    "dist"
   ],
   "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build --silent",
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
-    "lint-fix": "eslint -c .eslintrc.json --ignore-path .eslintignore ./ --fix",
-    "test": "mocha"
+    "test": "mocha -r ts-node/register -r test/etc/bootstrap.ts --extension ts",
+    "watch": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -34,16 +35,27 @@
   },
   "homepage": "https://github.com/willmorgan/stub-azure-function-context#readme",
   "devDependencies": {
+    "@azure/functions": "^3.2.0",
+    "@tsconfig/node10": "^1.0.9",
+    "@types/chai": "^4.3.1",
+    "@types/content-type": "^1.1.5",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^10.17.60",
+    "@types/sinon": "^10.0.11",
+    "@types/sinon-chai": "^3.2.8",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
     "chai": "^4.1.2",
     "eslint": "^7.18.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-security": "^1.4.0",
     "mocha": "^8.2.1",
-    "sinon": "^9.2.3"
+    "sinon": "^9.2.4",
+    "sinon-chai": "^3.7.0",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
-    "moment": "^2.24.0",
+    "content-type": "^1.0.4",
     "uuid": "^8.3.2"
   }
 }

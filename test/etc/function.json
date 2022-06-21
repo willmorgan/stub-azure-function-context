@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/function",
+  "disabled": false,
+  "bindings": [
+    {
+      "name": "myTrigger",
+      "type": "queueTrigger",
+      "connection": "STORAGE_CONNECTION",
+      "queueName": "queue",
+      "direction": "in"
+    }
+  ]
+}
