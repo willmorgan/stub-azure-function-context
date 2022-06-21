@@ -29,5 +29,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
         if: ${{ matrix.node-version != '10.x' }}
-      - run: npm run test --silent -- --forbid-only
+      - run: npm run test:coverage --silent -- --forbid-only
 

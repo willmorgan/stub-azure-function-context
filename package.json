@@ -14,6 +14,7 @@
     "prepare": "npm run build --silent",
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
     "test": "mocha -r ts-node/register -r test/etc/bootstrap.ts --extension ts",
+    "test:coverage": "nyc --all npm run test --silent",
     "watch": "tsc -w"
   },
   "repository": {
@@ -36,6 +37,7 @@
   "homepage": "https://github.com/willmorgan/stub-azure-function-context#readme",
   "devDependencies": {
     "@azure/functions": "^3.2.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@tsconfig/node10": "^1.0.9",
     "@types/chai": "^4.3.1",
     "@types/content-type": "^1.1.5",
@@ -49,6 +51,7 @@
     "chai": "^4.3.6",
     "eslint": "^7.32.0",
     "mocha": "^8.4.0",
+    "nyc": "^15.1.0",
     "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.8.1",
