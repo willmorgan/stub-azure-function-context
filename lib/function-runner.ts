@@ -30,8 +30,11 @@ export async function functionRunner(azFunction: AzureFunction, bindingDefinitio
     const trigger = triggers.length ? bindingData[triggers[0].name]?.toTrigger(): undefined;
     if (trigger) {
         const binding = bindingData[triggers[0].name].toContextBinding();
-        Object.assign(context.bindingData, {
+        Object.assign(context.bindings, {
             [triggers[0].name]: binding,
+        });
+        Object.assign(context.bindingData, {
+            ...binding,
         });
         if (triggers[0].type === 'http') {
             context.req = binding as HttpRequest;
