@@ -74,7 +74,7 @@ export function createContextForFunction(azFunction: AzureFunction, bindingDefin
         Object.assign(context.bindingData, {
             ...binding,
         });
-        if (trigger.type === 'http') {
+        if (trigger.type.toLowerCase() === 'httptrigger') {
             context.req = binding as HttpRequest;
         }
     }
