@@ -3,15 +3,12 @@ import {
     BindingDefinition,
     Context,
     ContextBindings,
-    HttpRequest, HttpResponseFull,
 } from '@azure/functions';
-import {
-    AugmentContextCallback,
-    createContextForFunction,
-} from './context-builder';
-
+import { createContextForFunction } from './context-builder';
 import { Binding } from './types';
 import { extractBindings } from './utils';
+
+export type AugmentContextCallback = (context: Context) => void;
 
 export async function functionRunner(azFunction: AzureFunction, bindingDefinitions: BindingDefinition[] | string = [], bindingData: Record<string, Binding> = {}, augmentContext?: AugmentContextCallback): Promise<any> {
     return new Promise((resolve, reject) => {

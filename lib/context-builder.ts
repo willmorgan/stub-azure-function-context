@@ -10,8 +10,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { extractBindings } from './utils';
 
-export type AugmentContextCallback = (context: Context) => void;
-
 function createConsoleLogger(): Logger {
     const logger = (...args: any[]) => console.log(...args);
     logger.verbose = (...args: any[]) => console.debug(...args);
