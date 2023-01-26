@@ -112,4 +112,8 @@ export class HttpBinding implements Binding {
     toContextBinding(): ContextBindings {
         return this.data;
     }
+
+    toBindingData(): ContextBindings {
+        return this.data;
+    }
 }

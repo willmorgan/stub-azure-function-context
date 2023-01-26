@@ -11,6 +11,10 @@ class MyTrigger implements Binding
     toTrigger(): ContextBindings | string {
         return {};
     }
+
+    toBindingData(): Record<string, ContextBindings | string> {
+        return {};
+    }
 }
 
 describe('context-builder', () => {

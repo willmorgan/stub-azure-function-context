@@ -4,4 +4,6 @@ export interface Binding {
     toTrigger(): ContextBindings | string;
 
     toContextBinding(): ContextBindings;
+
+    toBindingData(): Record<string, ContextBindings | string>;
 }

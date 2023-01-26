@@ -79,4 +79,8 @@ export class QueueBinding implements Binding {
     toTrigger(): string {
         return this.data.queueTrigger;
     }
+
+    toBindingData(): ContextBindings {
+        return this.data;
+    }
 }
