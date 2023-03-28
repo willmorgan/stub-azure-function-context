@@ -44,7 +44,7 @@ function createBaseContext(azFunction: AzureFunction, bindingDefinitions: Bindin
 }
 
 // see https://json.schemastore.org/function
-export type FunctionJson = {
+export interface FunctionJson {
     disabled?: boolean;
     excluded?: boolean;
     scriptFile?: string;
@@ -89,13 +89,9 @@ export function createContextForFunction(azFunction: AzureFunction, bindingDefin
                     return this;
                 },
                 setHeader(header: string, val: any): HttpResponseFull {
-                    if (header.toLowerCase() === 'cookie') {
-                        this.cookies?.push(val);
-                    } else {
-                        this.headers = Object.assign(this.headers ?? {}, {
-                            [header.toLowerCase()]: val,
-                        });
-                    }
+                    this.headers = Object.assign(this.headers ?? {}, {
+                        [header.toLowerCase()]: val,
+                    });
                     return this;
                 },
                 getHeader(header: string): any {

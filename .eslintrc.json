@@ -13,6 +13,7 @@
     "node": true
   },
   "rules": {
+    "@typescript-eslint/no-explicit-any": ["off"],
     "camelcase": ["off"],
     "comma-dangle": ["error", "always-multiline"],
     "indent": ["error", 4],

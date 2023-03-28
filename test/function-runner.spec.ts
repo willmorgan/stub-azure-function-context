@@ -60,6 +60,17 @@ describe('function-runner', () => {
         }
         expect.fail('Expected to throw');
     });
+    it('throws an error if a synchronous error is thrown', async () => {
+        const syntheticError = new Error('synthetic error');
+        const functionStub = stub().throws(syntheticError);
+        try {
+            await functionRunner(functionStub);
+        } catch (e) {
+            expect(e).to.equal(syntheticError);
+            return;
+        }
+        expect.fail('Expected to throw');
+    });
     it('loads bindings from a function.json file', async () => {
         const functionStub = stub().resolves('response value');
         await functionRunner(functionStub, resolve(__dirname, './etc/function.json'), {
