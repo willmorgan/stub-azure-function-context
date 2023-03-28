@@ -1,11 +1,12 @@
 # stub-azure-function-context
 
 Aims to implement the context object as described on the [Azure Functions JavaScript Developer Guide](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object)
-and allow developers to call azure functions for testing purposes.
+and allow developers to execute azure functions for testing purposes.
 
 ## Usage
 
-This library works by accepting a set of binding definitions much like you would place in the `function.json` file.
+This library works by accepting an Azure Function, the binding definitions (as you'd place in the `function.json` file),
+and trigger data.
 
 There is support for the different [input styles](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#inputs)
  which allow for:
@@ -25,11 +26,21 @@ which allow for:
 When the function has resolved the library will return either the manipulated context object to make assertions
 against or the returned value *if* the special `$return` name is used for one of the output bindings.
 
-If you follow the "ordered argument" pattern then you'll need to define the triggers/outputs in the same order
+If you follow the "ordered argument" pattern then you'll need to define the triggers in the same order
 as in your `function.json`.
 
-By default, logging uses `console` as a backend, although you can import and use `setContextLogger` to set your own.
-Your logger will need to conform to the same interface as `console` and will be wrapped to work with the `context.log` interface.
+By default, logging uses `console`, you can change this by manipulating the context object before it is passed to
+your function:
+
+```js
+const { functionRunner } = require('stub-azure-function-context');
+const myFunction = require('./path/to/function');
+const myLogger = require('./path/to/logger');
+
+functionRunner(myFunction, [], {}, (context) => {
+    context.log = myLogger;
+});
+```
 
 Only the logger methods defined in the developer guide are available in the `stubContext` call:
 
@@ -40,86 +51,67 @@ Only the logger methods defined in the developer guide are available in the `stu
 
 ## Supported triggers and bindings
 
-At the moment the following binding types are supported:
+The library ships with built-in support for Queue and HTTP triggers. Other triggers can be supported simply by
+providing an object that conforms to the `Binding` interface (it provides a `toTrigger()` and `toContextBinding()` method).
 
- - blob
- - http
- - queue
- - table
- - timer
- 
- Complete list of bindings: https://docs.microsoft.com/bs-latn-ba/azure/azure-functions/functions-triggers-bindings#supported-bindings
+The `toTrigger()` method returns the object/value that is passed to the Azure Function as the second parameter.
+For example, queue triggers are just the message text.
+
+The `toContextBinding()` method should return the object shape that is bound to the `bindingData` property of the context
+for the input binding/trigger. For example, this would be the entire queue message object for queue triggers.
+
+Complete list of bindings: https://docs.microsoft.com/bs-latn-ba/azure/azure-functions/functions-triggers-bindings#supported-bindings
 
 ## Function runner
 
-The `runStubFunctionFromBindings` function is designed to take a function that conforms to the azure function spec, an array of bindings
-which are defined in a similar way to those in `function.json`, and an optional `now` value (for mocking the time).
+The function runner takes up to 4 arguments: `functionRunner(azFunction, bindingDefinitions = [], bindingData = {}, augmentContext)`.
 
-The function then builds a mocked `context` object and calls the function as it would be by the azure function runtime.
-`runStubFunctionFromBindings` will return a `Promise` that will resolve once the function being tested calls `context.done`
-or, if it's a Promise itself, when it resolves. The `runStubFunctionFromBindings` will resolve as either the `context` object
+The first argument `azFunction` is the azure function you wish to execute.
+
+The second argument `bindingDefinitions` is the array of bindings associated with the function, this is what is found in the
+`bindings` property defined in the `function.json` file for your function. Alternatively you can provide a string, which represents
+the location of the `function.json` file on the filesystem and the library will load the binding definitions from there.
+
+The third argument `bindingData` is a map of [binding name] => `bindingData`. The `bindingData` object must conform to the
+`Binding` interface (see above section) and the binding name must match that used in the `bindingDefinitions`.
+
+The fourth argument `augmentContext` is a callback function that is passed the context object before the function is executed.
+This allows any "just in time" changes to the context object or even a way to reference it in your tests if you need to spy on
+it. This function should change the context by reference, the return value of the function is not used.
+
+### Running a function
+
+The function runner builds a mocked `context` object and calls the azure function as it would be by the azure function runtime.
+`functionRunner` will return a `Promise` that will resolve once the function being tested calls `context.done`
+or, if it's a Promise itself, when it resolves. The returned `Promise` will resolve as either the `context` object
 with the output bindings assigned (allowing assertions to be made against it) OR as the value that the Promise resolved to *if*
 the binding name `$return` was used.
 
 If the function errors, an error will be thrown.
 
-It is possible to build your own custom context object and run that against the function using `callFunction` and is intended for
-advanced uses where the `runStubFunctionFromBindings` does not meet requirements (such as returning both a `$return` and context
-object is required - though this is not recommended by azure).
-
-### Binding definitions
-
-The binding definitions accepted by the function runner are designed to accept the same syntax as the `function.json` file with a
-few differences. The most crucial is that triggers (eg: `httpTrigger`, `timerTrigger`) need a trigger object so that we can bind
-a mocked trigger to the context object. This should be placed in the property `data` eg:
-
-```js
-runStubFunctionFromBindings(functionToTest, [
-    { name: 'req', type: 'httpTrigger', direction: 'in', data: createHttpTrigger() },
-]);
-```
-
-A set of helper methods have been exposed to make creating the triggers more simple:
-
- - `createHttpTrigger`
- - `createBlobTrigger`
- - `createQueueTrigger`
- - `createQueueTriggerFromMessage`
- - `createTableTrigger`
- - `createTimerTrigger`
- 
- These all take a set of arguments to quickly create a trigger object that will conform to the expected trigger shapes.
- However, if these don't meet your needs, you can supply your own object or augment the returned object.
- 
- It is worth noting that the `queue` trigger shape does not conform to the queue messages shape received from actual azure queues.
- Therefore another helper method has been provided: `createQueueTriggerFromMessage` which takes 1 argument (the queue message) and
- maps it to the expected shape for the trigger. This allows better integration with a mocked environment when using something
- like [azurite](https://hub.docker.com/_/microsoft-azure-storage-azurite).
+## Usage
 
 ### HTTP examples:
 
 ```js
 
-const { runStubFunctionFromBindings, createHttpTrigger } = require('stub-azure-function-context');
+const { functionRunner, HttpBinding } = require('stub-azure-function-context');
+const { expect } = require('chai');
 const functionToTest = require('../function-under-test');
-
-// Optional step to direct context.log output elsewhere:
-const logger = require('./your-own-logger');
-setContextLogger(logger);
 
 describe('app code', () => {
 	it('returns 200', async () => {
-        const context = await runStubFunctionFromBindings(functionToTest, [
-            { type: 'httpTrigger', name: 'req', direction: 'in', data: createHttpTrigger('GET', 'http://example.com') },
+        const context = await functionRunner(functionToTest, [
+            { type: 'httpTrigger', name: 'req', direction: 'in' },
             { type: 'http', name: 'res', direction: 'out' },
-        ], new Date());
+        ], { req: new HttpBinding({ method: 'GET', body: { hello: 'world!' } }) });
 	    expect(context).to.have.nested.property('res.status', 200);
 	});
 	it('returns 200 in promise/a+ style', (done) => {
-		runStubFunctionFromBindings(functionToTest, [
-            { type: 'httpTrigger', name: 'req', direction: 'in', data: createHttpTrigger('GET', 'http://example.com') },
+        functionRunner(functionToTest, [
+            { type: 'httpTrigger', name: 'req', direction: 'in' },
             { type: 'http', name: 'res', direction: 'out' },
-        ], new Date())
+        ], { req: new HttpBinding({ method: 'GET', body: { hello: 'world!' } }) })
 			.then((context) => {
 				expect(context).to.have.nested.property('res.status', 200);
 				done();
@@ -127,10 +119,10 @@ describe('app code', () => {
 			.catch(done);
 	});
     it('supports $return values', async () => {
-        const response = await runStubFunctionFromBindings(functionToTest, [
-            { type: 'httpTrigger', name: 'req', direction: 'in', data: createHttpTrigger('GET', 'http://example.com') },
+        const response = await functionRunner(functionToTest, [
+            { type: 'httpTrigger', name: 'req', direction: 'in' },
             { type: 'http', name: '$return', direction: 'out' },
-        ], new Date());
+        ], { req: new HttpBinding({ method: 'GET', body: { hello: 'world!' } }) });
         expect(response).to.have.nested.property('status', 200);
     });
 });
@@ -139,38 +131,44 @@ describe('app code', () => {
 ### Queue examples
 
 ```js
-const { 
-    runStubFunctionFromBindings,
-    createQueueTrigger,
-    createQueueTriggerFromMessage,
+const {
+    functionRunner,
+    QueueBinding,
 } = require('stub-azure-function-context');
 const functionToTest = require('./function-to-tes');
-const { promisify } = require('util');
-const { createQueueService, QueueMessageEncoder } = require('azure-storage');
+const { QueueServiceClient } = require("@azure/storage-queue");
+
+const queueServiceClient = QueueServiceClient.fromConnectionString('UseDevelopmentStorage=true');
 
 describe('queue triggered message', () => {
     let queue;
-    before('set up queue', () => {
-        const queueSvc = createQueueService();
-        queueSvc.messageEncoder = new QueueMessageEncoder.TextBase64QueueMessageEncoder();
-        queue = {
-            get: promisify(queueSvc.getMessage.bind(queueSvc)),
-            create: promisify(queueSvc.createMessage.bind(queueSvc)),
-        };
-        return queue.create('my-message');
+    before('create a test queue', () => {
+        return queueServiceClient.getQueueClient('my-queue').create();
+    });
+    after('delete the test queue', () => {
+        return queueServiceClient.getQueueClient('my-queue').delete();
+    });
+    beforeEach('insert a base64 encoded queue message', () => {
+        return queueServiceClient.getQueueClient('my-queue').sendMessage(Buffer.from('my-message').toString('base64'));
     });
     it('accepts a message', async () => {
-        const message = await queue.get();
+        // fetch a message and decode the base64 message
+        const [message] = await queueServiceClient.getQueueClient('my-queue').receiveMessages({
+            numOfMessages: 1,
+        }).then((messages) => messages.map((message) => ({
+            ...message,
+            messageText: Buffer.from(message.messageText, 'base64').toString(),
+        })));
         const context = await runStubFunctionFromBindings(functionToTest, [
-            { name: 'myInput', direction: 'in', type: 'queueTrigger', data: createQueueTriggerFromMessage(message) }
-        ]);
+            { name: 'myInput', direction: 'in', type: 'queueTrigger' }
+        ], { myInput: QueueBinding.createFromDequeuedMessageItem(message) });
         expect(context.bindings.myInput).to.have.property('queueTrigger', 'my-message');
     });
     it('accepts a mocked message', async () => {
         const messageText = 'my-other-message';
         const context = await runStubFunctionFromBindings(functionToTest, [
-            { name: 'myInput', direction: 'in', type: 'queueTrigger', data: createQueueTrigger(messageText) }
-        ]);
+            { name: 'myInput', direction: 'in', type: 'queueTrigger' }
+        ], { myInput: QueueBinding.createFromMessageText('my-other-message') });
         expect(context.bindings.myInput).to.have.property('queueTrigger', 'my-other-message');
     });
 });
