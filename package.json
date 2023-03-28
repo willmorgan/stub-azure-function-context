@@ -38,7 +38,7 @@
   "devDependencies": {
     "@azure/functions": "^3.5.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
-    "@tsconfig/node10": "^1.0.9",
+    "@tsconfig/node12": "^1.0.11",
     "@types/chai": "^4.3.4",
     "@types/content-type": "^1.1.5",
     "@types/mocha": "^10.0.1",
