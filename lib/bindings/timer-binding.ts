@@ -40,17 +40,17 @@ export class TimerBinding implements Binding {
     toBindingData(): Record<string, string> {
         // 26/01/2023 11:15:00
         const date = [
-            this.now.getDay().toString().padStart(2, '0'),
+            this.now.getUTCDate().toString().padStart(2, '0'),
             '/',
-            (this.now.getMonth() + 1).toString().padStart(2, '0'),
+            (this.now.getUTCMonth() + 1).toString().padStart(2, '0'),
             '/',
-            this.now.getFullYear(),
+            this.now.getUTCFullYear(),
             ' ',
-            this.now.getHours().toString().padStart(2, '0'),
+            this.now.getUTCHours().toString().padStart(2, '0'),
             ':',
-            this.now.getMinutes().toString().padStart(2, '0'),
+            this.now.getUTCMinutes().toString().padStart(2, '0'),
             ':',
-            this.now.getSeconds().toString().padStart(2, '0'),
+            this.now.getUTCSeconds().toString().padStart(2, '0'),
         ].join('');
         return { timerTrigger: date };
     }
