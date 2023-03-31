@@ -1,7 +1,8 @@
-import { Binding, createContextForFunction, HttpBinding } from '../lib';
+import { Binding, createContextForFunction, HttpBinding, QueueBinding } from '../lib';
 import { BindingDefinition, Context, ContextBindings } from '@azure/functions';
 import { expect } from 'chai';
 import { stub } from 'sinon';
+import { TableBinding } from '../lib/bindings/table-binding';
 
 class MyTrigger implements Binding
 {
@@ -52,6 +53,40 @@ describe('context-builder', () => {
                 traceparent: null,
                 tracestate: null,
             },
+        });
+    });
+    it('creates a context with multiple inputs', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        const context = createContextForFunction(function test() {}, [{
+            queueName: "myqueue-items",
+            connection: "MyStorageConnectionAppSetting",
+            name: "myQueueItem",
+            type: "queueTrigger",
+            direction: "in",
+        },
+        {
+            name: "personEntity",
+            type: "table",
+            tableName: "Person",
+            partitionKey: "Test",
+            rowKey: "{queueTrigger}",
+            connection: "MyStorageConnectionAppSetting",
+            direction: "in",
+        }], {
+            myQueueItem: QueueBinding.createFromMessageText('test'),
+            personEntity: new TableBinding({
+                partitionKey: 'partition',
+                rowKey: 'test',
+                Name: 'Person Name',
+            }),
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+        }, () => {});
+        expect(context.bindings).to.have.property('myQueueItem');
+        expect(context.bindings).to.have.property('personEntity');
+        expect(context.bindings.personEntity).to.deep.equal({
+            Name: 'Person Name',
+            RowKey: 'test',
+            PartitionKey: 'partition',
         });
     });
     describe('http', () => {

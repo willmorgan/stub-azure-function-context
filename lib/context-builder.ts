@@ -1,6 +1,6 @@
 import {
     AzureFunction,
-    BindingDefinition,
+    BindingDefinition as BaseBindingDefinition,
     Context,
     ContextBindings,
     HttpRequest,
@@ -18,6 +18,22 @@ function createConsoleLogger(): Logger {
     logger.error = (...args: any[]) => console.error(...args);
     return logger;
 }
+
+interface QueueBindingDefinition extends BaseBindingDefinition {
+    queueName: string,
+    connection: string;
+}
+
+interface TableBindingDefinition extends BaseBindingDefinition {
+    tableName: string;
+    partitionKey?: string;
+    rowKey?: string;
+    take?: number;
+    filter?: string;
+    connection: string;
+}
+
+export type BindingDefinition = QueueBindingDefinition | TableBindingDefinition | BaseBindingDefinition;
 
 function createBaseContext(azFunction: AzureFunction, bindingDefinitions: BindingDefinition[]): Omit<Context, 'done'> {
     const invocationId = uuid();
@@ -63,7 +79,7 @@ export function createContextForFunction(azFunction: AzureFunction, bindingDefin
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const context: Context = createBaseContext(azFunction, typeof bindingDefinitions === 'string' ? require(bindingDefinitions).bindings : bindingDefinitions) as Context;
     // iterate over binding definitions creating triggers/inputs/outputs
-    const { trigger, outputs } = extractBindings(context.bindingDefinitions);
+    const { trigger, inputs, outputs } = extractBindings(context.bindingDefinitions);
     if (trigger) {
         const binding = bindingData[trigger.name].toContextBinding();
         Object.assign(context.bindings, {
@@ -76,6 +92,15 @@ export function createContextForFunction(azFunction: AzureFunction, bindingDefin
             context.req = binding as HttpRequest;
         }
     }
+    inputs.forEach((input) => {
+        const binding = bindingData[input.name].toContextBinding();
+        Object.assign(context.bindings, {
+            [input.name]: binding,
+        });
+        Object.assign(context.bindingData, {
+            ...bindingData[trigger.name].toBindingData(),
+        });
+    });
     const httpOutput = outputs.find(({ type }) => type.toLowerCase() === 'http');
     let doneCalled = false;
     if (httpOutput) {

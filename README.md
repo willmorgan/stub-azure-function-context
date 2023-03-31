@@ -53,9 +53,9 @@ Only the logger methods defined in the developer guide are available in the `stu
 
 ## Supported triggers and bindings
 
-The library ships with built-in support for Queue, Timer, and HTTP triggers. Other triggers can be supported simply by
-providing an object that conforms to the `Binding` interface (it provides `toTrigger()`, `toBindingData()`, and
-`toContextBinding()` methods).
+The library ships with built-in support for Table, Queue, Timer, and HTTP triggers. Other triggers can be supported
+simply by providing an object that conforms to the `Binding` interface (it provides `toTrigger()`, `toBindingData()`,
+and `toContextBinding()` methods).
 
 The `toTrigger()` method returns the object/value that is passed to the Azure Function as the second parameter.
 For example, queue triggers are just the message text.
