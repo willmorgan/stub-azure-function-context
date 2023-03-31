@@ -1,8 +1,7 @@
-import { Binding, createContextForFunction, HttpBinding, QueueBinding } from '../lib';
+import { Binding, createContextForFunction, HttpBinding, QueueBinding, TableBinding } from '../lib';
 import { BindingDefinition, Context, ContextBindings } from '@azure/functions';
 import { expect } from 'chai';
 import { stub } from 'sinon';
-import { TableBinding } from '../lib/bindings/table-binding';
 
 class MyTrigger implements Binding
 {

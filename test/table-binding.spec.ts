@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { TableBinding } from '../lib/bindings/table-binding';
+import { TableBinding } from '../lib';
 
 describe('TableBinding', () => {
     describe('.toContextBinding()', () => {
