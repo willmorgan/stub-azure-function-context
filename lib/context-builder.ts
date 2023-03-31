@@ -1,6 +1,6 @@
 import {
     AzureFunction,
-    BindingDefinition,
+    BindingDefinition as BaseBindingDefinition,
     Context,
     ContextBindings,
     HttpRequest,
@@ -18,6 +18,22 @@ function createConsoleLogger(): Logger {
     logger.error = (...args: any[]) => console.error(...args);
     return logger;
 }
+
+interface QueueBindingDefinition extends BaseBindingDefinition {
+    queueName: string,
+    connection: string;
+}
+
+interface TableBindingDefinition extends BaseBindingDefinition {
+    tableName: string;
+    partitionKey?: string;
+    rowKey?: string;
+    take?: number;
+    filter?: string;
+    connection: string;
+}
+
+export type BindingDefinition = QueueBindingDefinition | TableBindingDefinition | BaseBindingDefinition;
 
 function createBaseContext(azFunction: AzureFunction, bindingDefinitions: BindingDefinition[]): Omit<Context, 'done'> {
     const invocationId = uuid();
