@@ -33,4 +33,14 @@ describe('queue-binding', () => {
         );
         expect(functionStub).to.have.been.calledOnceWithExactly(match.any, 'test-message');
     });
+    it('executes a queue trigger from object', async () => {
+        const functionStub = stub().resolves();
+        const queueBinding = QueueBinding.createFromMessageText({test: 'test'});
+        await functionRunner(
+            functionStub,
+            [{ name: 'queueMessage', type: 'queueTrigger', direction: 'in' }],
+            { queueMessage: queueBinding },
+        );
+        expect(functionStub).to.have.been.calledOnceWithExactly(match.any, {test: 'test'});
+    });
 });

@@ -58,7 +58,7 @@ simply by providing an object that conforms to the `Binding` interface (it provi
 and `toContextBinding()` methods).
 
 The `toTrigger()` method returns the object/value that is passed to the Azure Function as the second parameter.
-For example, queue triggers are just the message text.
+For example, queue triggers are the message text or objects (in servicebus queue).
 
 The `toContextBinding()` method should return the object shape that is bound to the `bindingData` property of the context
 for the input binding/trigger. For example, this would be the entire queue message object for queue triggers.
@@ -162,14 +162,14 @@ describe('queue triggered message', () => {
             ...message,
             messageText: Buffer.from(message.messageText, 'base64').toString(),
         })));
-        const context = await runStubFunctionFromBindings(functionToTest, [
+        const context = await functionRunner(functionToTest, [
             { name: 'myInput', direction: 'in', type: 'queueTrigger' }
         ], { myInput: QueueBinding.createFromDequeuedMessageItem(message) });
         expect(context.bindings.myInput).to.have.property('queueTrigger', 'my-message');
     });
     it('accepts a mocked message', async () => {
         const messageText = 'my-other-message';
-        const context = await runStubFunctionFromBindings(functionToTest, [
+        const context = await functionRunner(functionToTest, [
             { name: 'myInput', direction: 'in', type: 'queueTrigger' }
         ], { myInput: QueueBinding.createFromMessageText('my-other-message') });
         expect(context.bindings.myInput).to.have.property('queueTrigger', 'my-other-message');
