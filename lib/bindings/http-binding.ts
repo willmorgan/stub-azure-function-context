@@ -96,6 +96,7 @@ function createHttpRequest(data: Partial<HttpRequest> = {}): HttpRequest {
             }
             throw new Error('multipart/form-data support not yet implemented');
         },
+        ...data.params,
     }
 }
 
