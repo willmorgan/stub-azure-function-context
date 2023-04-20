@@ -43,4 +43,19 @@ describe('http-binding', () => {
         const result = await functionRunner(functionStub, [{ name: 'myResponse', type: 'http', direction: 'out' }]);
         expect(result).to.have.property('res', response);
     });
+    it('executes an Http Trigger with params', async () => {
+        const req = { params: { id: 'testId' } };
+        const functionStub = stub().resolves();
+        const httpBinding = new HttpBinding(req);
+        const result = await functionRunner(
+            functionStub,
+            [
+                { name: 'req', type: 'httpTrigger', direction: 'in' },
+            ],
+            { req: httpBinding },
+        );
+        expect(functionStub).to.have.been.calledOnceWithExactly(match.any, httpBinding.toContextBinding());
+        expect(result.bindingData.params.id).to.equal('testId')
+        expect(result.bindingData.params).to.deep.equal(req.params)
+    });
 });
