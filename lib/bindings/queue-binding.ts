@@ -5,7 +5,7 @@ import { ContextBindings } from '@azure/functions';
 
 export type QueueBindingData = {
     id: string;
-    queueTrigger: string;
+    queueTrigger: string | object;
     dequeueCount: number;
     expirationTime: string;
     insertionTime: string;
@@ -41,7 +41,7 @@ const MESSAGE_MAP: Record<keyof DequeuedMessageItem, keyof QueueBindingData> = {
 };
 
 export class QueueBinding implements Binding {
-    static createFromMessageText(queueTrigger: string): QueueBinding {
+    static createFromMessageText(queueTrigger: string | object): QueueBinding {
         const now = Date.now();
         return new QueueBinding({
             id: uuid(),
@@ -76,7 +76,7 @@ export class QueueBinding implements Binding {
         return this.data;
     }
 
-    toTrigger(): string {
+    toTrigger(): string | object {
         return this.data.queueTrigger;
     }
 
