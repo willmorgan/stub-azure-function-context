@@ -2,6 +2,7 @@ import { functionRunner, QueueBinding } from '../lib';
 import { match, stub } from 'sinon';
 import { expect } from 'chai';
 import { resolve } from 'path';
+import { Context } from '@azure/functions';
 
 const contextMatcher = match({
     invocationId: match.string,
@@ -32,20 +33,20 @@ describe('function-runner', () => {
         expect(augmentor).to.have.callCount(1);
     });
     it('returns the function result if out name is $return', async () => {
-        const functionStub = stub().resolves('response value');
+        const functionStub = stub<[Context], Promise<string>>().resolves('response value');
         const result = await functionRunner(functionStub, [{ type: 'queue', direction: 'out', name: '$return' }]);
         expect(functionStub).to.have.callCount(1);
         expect(result).to.equal('response value');
     });
     it('returns the context when value sent to done callback', async () => {
-        const functionStub = stub().callsFake((ctx) => {
+        const functionStub = stub<[Context], Promise<void>>().callsFake(async (ctx) => {
             ctx.done(null, { myOutput: 'My message' });
         });
         const result = await functionRunner(functionStub, [{ type: 'queue', direction: 'out', name: 'myOutput' }]);
         expect(contextMatcher.test(result)).to.equal(true);
     });
     it('returns the context if nothing returned', async () => {
-        const functionStub = stub().callsFake((ctx) => ctx.done());
+        const functionStub = stub<[Context], void>().callsFake((ctx) => ctx.done());
         const result = await functionRunner(functionStub);
         expect(contextMatcher.test(result)).to.equal(true);
     });

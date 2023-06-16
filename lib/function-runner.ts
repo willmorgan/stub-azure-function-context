@@ -10,7 +10,7 @@ import { extractBindings } from './utils';
 
 export type AugmentContextCallback = (context: Context) => void;
 
-export async function functionRunner(azFunction: AzureFunction, bindingDefinitions: BindingDefinition[] | string = [], bindingData: Record<string, Binding> = {}, augmentContext?: AugmentContextCallback): Promise<any> {
+export async function functionRunner<T extends AzureFunction = AzureFunction>(azFunction: T, bindingDefinitions: BindingDefinition[] | string = [], bindingData: Record<string, Binding> = {}, augmentContext?: AugmentContextCallback): Promise<Awaited<ReturnType<T>> extends void ? Context : ReturnType<T>> {
     return new Promise((resolve, reject) => {
         const resolver = (err: null | Error, result?: any) => {
             if (err) {
