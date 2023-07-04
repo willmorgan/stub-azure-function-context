@@ -1,32 +1,86 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
+  pull_request:
 
 permissions:
   contents: read
 
+env:
+  CI: true
+
 jobs:
-  build:
-
-    env:
-      CI: true
-
+  lint:
+    name: Linting check
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x]
-
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run test:coverage --silent -- npm test -- --forbid-only
-
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+      - name: Test code
+        run: npm test -- --forbid-only
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # to be able to comment on released pull requests
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+      - name: Test code
+        run: npm run test:coverage --silent -- npm test -- --forbid-only
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/cobertura-coverage.xml
+          badge: true
+          format: markdown
+          output: both
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        with:
+          recreate: true
+          path: code-coverage-results.md
