@@ -47,7 +47,7 @@
     "@semantic-release/github": "^9.0.3",
     "@semantic-release/npm": "^10.0.4",
     "@semantic-release/release-notes-generator": "^11.0.3",
-    "@tsconfig/node12": "^1.0.11",
+    "@tsconfig/node12": "^12.1.0",
     "@types/chai": "^4.3.4",
     "@types/content-type": "^1.1.5",
     "@types/mocha": "^10.0.1",
