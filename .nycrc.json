@@ -1,6 +1,5 @@
 {
   "extends": "@istanbuljs/nyc-config-typescript",
-  "include": [
-    "lib"
-  ]
+  "include": ["lib"],
+  "all": true
 }

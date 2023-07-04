@@ -15,7 +15,7 @@
     "prepare": "npm run build --silent",
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
     "test": "mocha -r ts-node/register -r test/etc/bootstrap.ts --extension ts",
-    "test:coverage": "nyc --all --reporter=html",
+    "test:coverage": "nyc --reporter=cobertura",
     "watch": "tsc -w"
   },
   "repository": {
@@ -38,7 +38,15 @@
   "homepage": "https://github.com/willmorgan/stub-azure-function-context#readme",
   "devDependencies": {
     "@azure/functions": "^3.5.1",
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^10.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.0.3",
+    "@semantic-release/npm": "^10.0.4",
+    "@semantic-release/release-notes-generator": "^11.0.3",
     "@tsconfig/node12": "^1.0.11",
     "@types/chai": "^4.3.4",
     "@types/content-type": "^1.1.5",
