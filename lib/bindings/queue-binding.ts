@@ -77,6 +77,14 @@ export class QueueBinding implements Binding {
     }
 
     toTrigger(): string | object {
+        // messages that parse as JSON are returned as objects
+        if (typeof this.data.queueTrigger === 'string') {
+            try {
+                return JSON.parse(this.data.queueTrigger);
+            } catch (e) {
+                // swallow error
+            }
+        }
         return this.data.queueTrigger;
     }
 
