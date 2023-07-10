@@ -103,24 +103,24 @@ const { expect } = require('chai');
 const functionToTest = require('../function-under-test');
 
 describe('app code', () => {
-	it('returns 200', async () => {
+    it('returns 200', async () => {
         const context = await functionRunner(functionToTest, [
             { type: 'httpTrigger', name: 'req', direction: 'in' },
             { type: 'http', name: 'res', direction: 'out' },
         ], { req: new HttpBinding({ method: 'GET', body: { hello: 'world!' } }) });
-	    expect(context).to.have.nested.property('res.status', 200);
-	});
-	it('returns 200 in promise/a+ style', (done) => {
+        expect(context).to.have.nested.property('res.status', 200);
+    });
+    it('returns 200 in promise/a+ style', (done) => {
         functionRunner(functionToTest, [
             { type: 'httpTrigger', name: 'req', direction: 'in' },
             { type: 'http', name: 'res', direction: 'out' },
         ], { req: new HttpBinding({ method: 'GET', body: { hello: 'world!' } }) })
-			.then((context) => {
-				expect(context).to.have.nested.property('res.status', 200);
-				done();
-			})
-			.catch(done);
-	});
+            .then((context) => {
+                expect(context).to.have.nested.property('res.status', 200);
+                done();
+            })
+            .catch(done);
+    });
     it('supports $return values', async () => {
         const response = await functionRunner(functionToTest, [
             { type: 'httpTrigger', name: 'req', direction: 'in' },
