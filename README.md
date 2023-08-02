@@ -1,6 +1,6 @@
 # stub-azure-function-context
 
-[![Build Status](https://github.com/willmorgan/stub-azure-function-context/actions/workflows/nodejs.yml/badge.svg)](https://github.com/willmorgan/stub-azure-function-context/actions/workflows/nodejs.yml)
+[![Build Status](https://github.com/willmorgan/stub-azure-function-context/actions/workflows/release.yml/badge.svg)](https://github.com/willmorgan/stub-azure-function-context/actions/workflows/release.yml)
 
 Aims to implement the context object as described on the [Azure Functions JavaScript Developer Guide](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object)
 and allow developers to execute azure functions for testing purposes.

@@ -1,17 +1,122 @@
-name: Release
+name: Lint, Test & Release
+
 on:
   push:
     branches:
       - develop
+  pull_request:
 
 permissions:
   contents: read
 
 jobs:
+  commitlint:
+    name: Lint commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Lint commit
+        if: github.event_name == 'push'
+        run: npx commitlint --from HEAD~1 --to HEAD --verbose
+      - name: Lint commits
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+  codelint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Lint code
+        run: npm run lint
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs:
+      - commitlint
+      - codelint
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 20.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Test code
+        run: npm test -- --forbid-only
+  coverage:
+    name: Run code coverage
+    runs-on: ubuntu-latest
+    needs:
+      - commitlint
+      - codelint
+    permissions:
+      pull-requests: write # to be able to comment on released pull requests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Test code
+        run: npm run test:coverage --silent -- npm test -- --forbid-only
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/cobertura-coverage.xml
+          badge: true
+          format: markdown
+          output: both
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        with:
+          recreate: true
+          path: code-coverage-results.md
   release:
     name: Release
+    concurrency: release
+    if: ${{ github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    needs:
+      - commitlint
+      - codelint
+      - test
     permissions:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
