@@ -26,10 +26,12 @@ updates:
           - "@types/mocha"
           - "@types/sinon"
           - "@types/sinon-chai"
-      test-tools:
+      lint-tools:
         patterns:
           - "eslint"
           - "@typescript-eslint/*"
+      test-tools:
+        patterns:
           - "chai"
           - "@types/chai"
           - "@istanbuljs/nyc-config-typescript"
