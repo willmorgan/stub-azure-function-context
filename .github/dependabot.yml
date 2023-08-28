@@ -9,3 +9,34 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      release-tools:
+        patterns:
+          - "@commitlint/*"
+          - "semantic-release"
+          - "@semantic-release/*"
+      build-tools:
+        patterns:
+          - "@types/*"
+          - "@tsconfig/*"
+          - "ts-node"
+          - "typescript"
+        exclude-patterns:
+          - "@types/chai"
+          - "@types/mocha"
+          - "@types/sinon"
+          - "@types/sinon-chai"
+      test-tools:
+        patterns:
+          - "eslint"
+          - "@typescript-eslint/*"
+          - "chai"
+          - "@types/chai"
+          - "@istanbuljs/nyc-config-typescript"
+          - "nyc"
+          - "mocha"
+          - "@types/mocha"
+          - "sinon"
+          - "@types/sinon"
+          - "sinon-chai"
+          - "@types/sinon-chai"
