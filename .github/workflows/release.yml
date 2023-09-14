@@ -96,7 +96,7 @@ jobs:
         run: |
           echo "# Code coverage" >> $GITHUB_STEP_SUMMARY
           npx nyc report | sed --expression='1d;$d'  >> $GITHUB_STEP_SUMMARY
-        if: always()
+        if: ${{ !cancelled() }}
   release:
     name: Release
     concurrency: release
