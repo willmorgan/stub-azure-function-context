@@ -70,6 +70,7 @@ function createHttpRequest(data: Partial<HttpRequest> = {}): HttpRequest {
         get(field: string): string | undefined {
             return this.headers[field.toLowerCase()];
         },
+        bufferBody: data.bufferBody ?? data.rawBody ? Buffer.from(data.rawBody) : Buffer.from(data.body ? JSON.stringify(data.body) : []),
         body: data.body ?? safeJSONParse(data.rawBody) ?? data.rawBody,
         method: data.method ?? 'GET',
         params: data.params ?? {},
