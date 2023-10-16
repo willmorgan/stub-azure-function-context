@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/willmorgan/stub-azure-function-context/compare/v2.3.1...v2.4.0) (2023-10-16)
+
+
+### Features
+
+* add bufferBody prop to HTTP bindings ([473092b](https://github.com/willmorgan/stub-azure-function-context/commit/473092bc8068bb6aa297c5cb777c4d5d9073a632))
+
 ## [2.3.1](https://github.com/willmorgan/stub-azure-function-context/compare/v2.3.0...v2.3.1) (2023-07-19)
 
 
