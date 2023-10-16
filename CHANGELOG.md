@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/willmorgan/stub-azure-function-context/compare/v2.4.0...v2.4.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* fix bufferBody condition to correctly resolve provided buffers ([411d7f8](https://github.com/willmorgan/stub-azure-function-context/commit/411d7f89071b8271c5a3b0529aa54cff5e6a1db8))
+
 ## [2.4.0](https://github.com/willmorgan/stub-azure-function-context/compare/v2.3.1...v2.4.0) (2023-10-16)
 
 
