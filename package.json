@@ -12,8 +12,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build --silent",
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
+    "prepare": "npm run build --silent",
+    "release": "semantic-release",
     "test": "mocha -r ts-node/register -r test/etc/bootstrap.ts --extension ts",
     "test:coverage": "nyc --reporter=cobertura",
     "watch": "tsc -w"
