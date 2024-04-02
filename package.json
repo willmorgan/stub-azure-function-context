@@ -13,6 +13,8 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
+    "lint:code": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
+    "lint:commits": "commitlint",
     "prepare": "npm run build --silent",
     "release": "semantic-release",
     "test": "mocha -r ts-node/register -r test/etc/bootstrap.ts --extension ts",

@@ -28,10 +28,10 @@ jobs:
         run: npm clean-install
       - name: Lint commit
         if: github.event_name == 'push'
-        run: npx commitlint --from HEAD~1 --to HEAD --verbose
+        run: npm run lint:commits -- --from HEAD~1 --to HEAD --verbose
       - name: Lint commits
         if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        run: npm run lint:commits -- --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
   codelint:
     name: Lint code
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm clean-install
       - name: Lint code
-        run: npm run lint
+        run: npm run lint:code
   test:
     name: Run tests
     runs-on: ubuntu-latest
