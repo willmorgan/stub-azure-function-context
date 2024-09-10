@@ -7,7 +7,7 @@ import {
     HttpResponseFull,
     Logger,
 } from '@azure/functions';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'crypto';
 import { extractBindings } from './utils';
 
 function createConsoleLogger(): Logger {
