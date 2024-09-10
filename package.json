@@ -71,7 +71,6 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "content-type": "^1.0.5",
-    "uuid": "^10.0.0"
+    "content-type": "^1.0.5"
   }
 }

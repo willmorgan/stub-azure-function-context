@@ -1,6 +1,6 @@
 // see https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
 import { Binding } from '../types';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'crypto';
 import { ContextBindings } from '@azure/functions';
 
 export type QueueBindingData = {

@@ -1,7 +1,7 @@
 import { match, stub } from 'sinon';
 import { functionRunner, QueueBinding } from '../lib';
 import { expect } from 'chai';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'crypto';
 
 describe('queue-binding', () => {
     it('executes a queue trigger', async () => {

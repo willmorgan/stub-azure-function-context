@@ -30,7 +30,7 @@ describe('context-builder', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             () => {},
         );
-        const { done, invocationId, log } = context;
+        const { done, invocationId, log, traceContext } = context;
 
         expect(context).to.deep.equal({
             invocationId,
@@ -47,12 +47,9 @@ describe('context-builder', () => {
                 retryContext: null,
             },
             log,
-            traceContext: {
-                attributes: null,
-                traceparent: null,
-                tracestate: null,
-            },
+            traceContext,
         });
+        expect(traceContext.traceparent).to.match(/^00-[0-9a-f]{32}-[0-9a-f]{16}-00$/);
     });
     it('creates a context with multiple inputs', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
