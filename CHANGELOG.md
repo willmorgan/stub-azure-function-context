@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/willmorgan/stub-azure-function-context/compare/v2.4.1...v2.5.0) (2024-09-10)
+
+
+### Features
+
+* add default `traceparent` value to `traceContext` ([fa06e41](https://github.com/willmorgan/stub-azure-function-context/commit/fa06e413534b182bb427be43db16738c21a33fb4))
+
 ## [2.4.1](https://github.com/willmorgan/stub-azure-function-context/compare/v2.4.0...v2.4.1) (2023-10-16)
 
 
