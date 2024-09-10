@@ -17,7 +17,7 @@ const contextMatcher = match({
         invocationId: match.string,
     },
     traceContext: {
-        traceparent: null,
+        traceparent: match.string,
         tracestate: null,
         attributes: null,
     },

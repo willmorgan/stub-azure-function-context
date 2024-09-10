@@ -7,7 +7,7 @@ import {
     HttpResponseFull,
     Logger,
 } from '@azure/functions';
-import { randomUUID as uuid } from 'crypto';
+import { randomUUID as uuid, randomBytes } from 'crypto';
 import { extractBindings } from './utils';
 
 function createConsoleLogger(): Logger {
@@ -50,7 +50,7 @@ function createBaseContext(azFunction: AzureFunction, bindingDefinitions: Bindin
             invocationId,
         },
         traceContext: {
-            traceparent: null,
+            traceparent: `00-${randomBytes(16).toString('hex')}-${randomBytes(8).toString('hex')}-00`,
             tracestate: null,
             attributes: null,
         },
