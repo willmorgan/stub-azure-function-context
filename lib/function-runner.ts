@@ -36,16 +36,15 @@ export async function functionRunner<T extends AzureFunction = AzureFunction>(az
             return bindings;
         }, {});
         try {
-            const result = azFunction(context, ...[triggerData, ...Object.values(inputBindings)].filter((val) => !!val));
-            if (result && typeof result.then === 'function') {
-                result.then((output) => {
+            Promise.resolve(azFunction(context, ...[triggerData, ...Object.values(inputBindings)].filter((val) => !!val)))
+                .then((output) => {
                     if (outputs.some(({ name }) => name === '$return')) {
                         context.done(null, output);
                     } else {
                         context.done(null, context.bindings);
                     }
-                }).catch(context.done);
-            }
+                })
+                .catch(context.done);
         } catch (e) {
             context.done(e as Error);
         }
