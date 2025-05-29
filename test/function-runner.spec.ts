@@ -2,7 +2,7 @@ import { functionRunner, QueueBinding } from '../lib';
 import { match, stub } from 'sinon';
 import { expect } from 'chai';
 import { resolve } from 'path';
-import { Context } from '@azure/functions';
+import { AzureFunction, Context } from '@azure/functions';
 
 const contextMatcher = match({
     invocationId: match.string,
@@ -32,9 +32,22 @@ describe('function-runner', () => {
         expect(functionStub).to.have.callCount(1);
         expect(augmentor).to.have.callCount(1);
     });
+    it ('calls the context augment sync callback', async () => {
+        const functionStub = stub().returns(null);
+        const augmentor = stub();
+        await functionRunner(functionStub, [], {}, augmentor);
+        expect(functionStub).to.have.callCount(1);
+        expect(augmentor).to.have.callCount(1);
+    });
     it('returns the function result if out name is $return', async () => {
         const functionStub = stub<[Context], Promise<string>>().resolves('response value');
         const result = await functionRunner(functionStub, [{ type: 'queue', direction: 'out', name: '$return' }]);
+        expect(functionStub).to.have.callCount(1);
+        expect(result).to.equal('response value');
+    });
+    it('returns the sync function result if out name is $return', async () => {
+        const functionStub = stub<[Context], string>().returns('response value');
+        const result = await functionRunner(functionStub as unknown as AzureFunction, [{ type: 'queue', direction: 'out', name: '$return' }]);
         expect(functionStub).to.have.callCount(1);
         expect(result).to.equal('response value');
     });
@@ -47,6 +60,11 @@ describe('function-runner', () => {
     });
     it('returns the context if nothing returned', async () => {
         const functionStub = stub<[Context], void>().callsFake((ctx) => ctx.done());
+        const result = await functionRunner(functionStub);
+        expect(contextMatcher.test(result)).to.equal(true);
+    });
+    it('returns the context if nothing returned from sync function', async () => {
+        const functionStub = stub<[Context], void>().returns(undefined);
         const result = await functionRunner(functionStub);
         expect(contextMatcher.test(result)).to.equal(true);
     });
