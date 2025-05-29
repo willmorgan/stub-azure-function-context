@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.1](https://github.com/willmorgan/stub-azure-function-context/compare/v2.5.0...v2.5.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* handle sync function apps ([e2f1243](https://github.com/willmorgan/stub-azure-function-context/commit/e2f124379d167612ff802408f0660338b611e658))
+
 ## [2.5.0](https://github.com/willmorgan/stub-azure-function-context/compare/v2.4.1...v2.5.0) (2024-09-10)
 
 
