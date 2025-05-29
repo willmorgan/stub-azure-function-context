@@ -1,3 +1,3 @@
 import { use } from 'chai';
-import sinonChai = require('sinon-chai');
+import sinonChai from 'sinon-chai';
 use(sinonChai);
