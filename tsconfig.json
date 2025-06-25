@@ -10,5 +10,5 @@
     "rootDir": "lib/",
     "sourceMap": true
   },
-  "exclude": ["test", "dist"]
+  "include": ["./lib"]
 }

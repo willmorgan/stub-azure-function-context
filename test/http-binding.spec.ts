@@ -1,7 +1,7 @@
 import { match, stub } from 'sinon';
 import { functionRunner, HttpBinding } from '../lib';
 import { expect } from 'chai';
-import { HttpResponse } from '@azure/functions';
+import { Context, HttpResponse } from '@azure/functions';
 
 describe('http-binding', () => {
     it('executes an Http Trigger', async () => {
@@ -23,7 +23,7 @@ describe('http-binding', () => {
                 message: 'Something went wrong',
             },
         };
-        const functionStub = stub().resolves(response);
+        const functionStub = stub<[], Promise<HttpResponse>>().resolves(response);
         const result = await functionRunner(functionStub, [{ name: '$return', type: 'http', direction: 'out' }]);
         expect(result).to.deep.equal(response);
     });
@@ -34,7 +34,7 @@ describe('http-binding', () => {
                 message: 'hello, world!',
             },
         };
-        const functionStub = stub().callsFake((ctx) => {
+        const functionStub = stub<[Context], void>().callsFake((ctx) => {
             Object.assign(ctx.bindings, {
                 myResponse: response,
             });
@@ -45,7 +45,7 @@ describe('http-binding', () => {
     });
     it('executes an Http Trigger with params', async () => {
         const req = { params: { id: 'testId' } };
-        const functionStub = stub().resolves();
+        const functionStub = stub<[], Promise<void>>().resolves();
         const httpBinding = new HttpBinding(req);
         const result = await functionRunner(
             functionStub,
@@ -55,7 +55,7 @@ describe('http-binding', () => {
             { req: httpBinding },
         );
         expect(functionStub).to.have.been.calledOnceWithExactly(match.any, httpBinding.toContextBinding());
-        expect(result.bindingData.params.id).to.equal('testId')
-        expect(result.bindingData.params).to.deep.equal(req.params)
+        expect(result.bindingData.params).to.have.property('id', 'testId');
+        expect(result.bindingData.params).to.deep.equal(req.params);
     });
 });

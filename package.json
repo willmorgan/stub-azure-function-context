@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "lint": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
-    "lint:code": "eslint -c .eslintrc.json --ignore-path .eslintignore ./",
+    "lint": "eslint ./lib ./test",
+    "lint:code": "eslint ./lib ./test",
     "lint:commits": "commitlint",
     "prepare": "npm run build --silent",
     "release": "semantic-release",
@@ -43,7 +43,7 @@
     "@azure/functions": "^3.5.1",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@eslint/js": "^9.29.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^11.1.0",
     "@semantic-release/git": "^10.0.1",
@@ -58,17 +58,16 @@
     "@types/sinon": "^17.0.0",
     "@types/sinon-chai": "^3.2.9",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
     "chai": "^4.3.7",
-    "eslint": "^8.31.0",
+    "eslint": "^8.57.1",
     "mocha": "^11.0.1",
     "nyc": "^17.0.0",
     "semantic-release": "^22.0.12",
     "sinon": "^21.0.0",
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.0"
   },
   "dependencies": {
     "content-type": "^1.0.5"
