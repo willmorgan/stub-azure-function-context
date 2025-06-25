@@ -2,12 +2,12 @@
 import { Binding } from '../types';
 import { ContextBindings, Timer } from '@azure/functions';
 
-export type TimerBindingData = {
+export interface TimerBindingData {
     isPastDue?: boolean;
     adjustForDst?: boolean;
     now: Date;
     interval: number;
-};
+}
 
 export class TimerBinding implements Binding {
     private readonly data: Timer;

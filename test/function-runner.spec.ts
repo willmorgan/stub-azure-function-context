@@ -2,7 +2,7 @@ import { functionRunner, QueueBinding } from '../lib';
 import { match, stub } from 'sinon';
 import { expect } from 'chai';
 import { resolve } from 'path';
-import { AzureFunction, Context } from '@azure/functions';
+import { Context } from '@azure/functions';
 
 const contextMatcher = match({
     invocationId: match.string,
@@ -47,13 +47,14 @@ describe('function-runner', () => {
     });
     it('returns the sync function result if out name is $return', async () => {
         const functionStub = stub<[Context], string>().returns('response value');
-        const result = await functionRunner(functionStub as unknown as AzureFunction, [{ type: 'queue', direction: 'out', name: '$return' }]);
+        const result = await functionRunner(functionStub as unknown as () => Promise<string>, [{ type: 'queue', direction: 'out', name: '$return' }]);
         expect(functionStub).to.have.callCount(1);
         expect(result).to.equal('response value');
     });
     it('returns the context when value sent to done callback', async () => {
-        const functionStub = stub<[Context], Promise<void>>().callsFake(async (ctx) => {
+        const functionStub = stub<[Context], Promise<void>>().callsFake((ctx) => {
             ctx.done(null, { myOutput: 'My message' });
+            return Promise.resolve();
         });
         const result = await functionRunner(functionStub, [{ type: 'queue', direction: 'out', name: 'myOutput' }]);
         expect(contextMatcher.test(result)).to.equal(true);

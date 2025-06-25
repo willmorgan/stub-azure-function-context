@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call,  @typescript-eslint/no-unsafe-assignment */
 import {
     AzureFunction,
     BindingDefinition as BaseBindingDefinition,
@@ -76,8 +77,8 @@ export interface FunctionJson {
 }
 
 export function createContextForFunction(azFunction: AzureFunction, bindingDefinitions: BindingDefinition[] | string, bindingData: Record<string, ContextBindings>, resolver: (err: null | Error, result?: any) => void): Context {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const context: Context = createBaseContext(azFunction, typeof bindingDefinitions === 'string' ? require(bindingDefinitions).bindings : bindingDefinitions) as Context;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports,@typescript-eslint/no-unsafe-member-access
+    const context: Context = createBaseContext(azFunction, (typeof bindingDefinitions === 'string' ? require(bindingDefinitions).bindings : bindingDefinitions) as BindingDefinition[]) as Context;
     // iterate over binding definitions creating triggers/inputs/outputs
     const { trigger, inputs, outputs } = extractBindings(context.bindingDefinitions);
     if (trigger) {

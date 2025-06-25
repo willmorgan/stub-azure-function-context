@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Binding, createContextForFunction, HttpBinding, QueueBinding, TableBinding } from '../lib';
 import { BindingDefinition, Context, ContextBindings } from '@azure/functions';
 import { expect } from 'chai';
@@ -30,6 +31,7 @@ describe('context-builder', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             () => {},
         );
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         const { done, invocationId, log, traceContext } = context;
 
         expect(context).to.deep.equal({

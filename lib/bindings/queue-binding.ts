@@ -3,7 +3,7 @@ import { Binding } from '../types';
 import { randomUUID as uuid } from 'crypto';
 import { ContextBindings } from '@azure/functions';
 
-export type QueueBindingData = {
+export interface QueueBindingData {
     id: string;
     queueTrigger: string | object;
     dequeueCount: number;
@@ -11,7 +11,7 @@ export type QueueBindingData = {
     insertionTime: string;
     nextVisibleTime: string;
     popReceipt: string;
-};
+}
 
 declare interface DequeuedMessageItem {
     /** The Id of the Message. */
@@ -80,7 +80,8 @@ export class QueueBinding implements Binding {
         // messages that parse as JSON are returned as objects
         if (typeof this.data.queueTrigger === 'string') {
             try {
-                return JSON.parse(this.data.queueTrigger);
+                return JSON.parse(this.data.queueTrigger) as object;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (e) {
                 // swallow error
             }

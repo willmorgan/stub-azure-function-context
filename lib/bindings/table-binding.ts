@@ -4,6 +4,7 @@ import { ContextBindings } from '@azure/functions';
 /**
  * A set of key-value pairs representing the table entity.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TableEntity<T extends object = Record<string, any>> = T & {
     /**
      * The PartitionKey property of the entity.

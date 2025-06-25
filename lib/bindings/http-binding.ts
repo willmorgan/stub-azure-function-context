@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument */
 import { ContextBindings, Form, FormPart, HttpRequest } from '@azure/functions';
 import { parse as parseContentType } from 'content-type';
 import { URL } from 'url';
@@ -5,7 +6,9 @@ import { Binding } from '../types';
 
 function safeJSONParse(text: string, reviver?: (this: any, key: string, value: any) => any) {
     try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(text, reviver);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
         return undefined;
     }
@@ -49,7 +52,7 @@ class FormData implements Form {
 
     getAll(name: string): FormPart[] {
         if (this.has(name)) {
-            return [this.get(name) as FormPart];
+            return [this.get(name)!];
         }
         return [];
     }
@@ -61,7 +64,7 @@ class FormData implements Form {
 
 function createHttpRequest(data: Partial<HttpRequest> = {}): HttpRequest {
     return {
-        headers: Object.entries(data.headers || {}).reduce((headers, [key, value]) => {
+        headers: Object.entries(data.headers ?? {}).reduce((headers, [key, value]) => {
             return {
                 ...headers,
                 [key.toLowerCase()]: value,

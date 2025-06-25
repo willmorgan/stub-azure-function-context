@@ -12,11 +12,11 @@ export type AugmentContextCallback = (context: Context) => void;
 
 export async function functionRunner<T extends AzureFunction = AzureFunction>(azFunction: T, bindingDefinitions: BindingDefinition[] | string = [], bindingData: Record<string, Binding> = {}, augmentContext?: AugmentContextCallback): Promise<Awaited<ReturnType<T>> extends void ? Context : Awaited<ReturnType<T>>> {
     return new Promise((resolve, reject) => {
-        const resolver = (err: null | Error, result?: any) => {
+        const resolver = (err: null | Error, result?: Awaited<ReturnType<T>> | Context) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(result);
+                resolve(result as Awaited<ReturnType<T>>);
             }
         }
         const context: Context = createContextForFunction(azFunction, bindingDefinitions, bindingData, resolver);
@@ -44,6 +44,7 @@ export async function functionRunner<T extends AzureFunction = AzureFunction>(az
                         context.done(null, context.bindings);
                     }
                 })
+                // eslint-disable-next-line @typescript-eslint/unbound-method
                 .catch(context.done);
         } catch (e) {
             context.done(e as Error);
