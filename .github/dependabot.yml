@@ -34,6 +34,8 @@ updates:
         patterns:
           - "eslint"
           - "@typescript-eslint/*"
+          - "typescript-eslint"
+          - "@eslint/*"
       test-tools:
         patterns:
           - "chai"
