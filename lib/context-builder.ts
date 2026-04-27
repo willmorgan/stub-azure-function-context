@@ -106,6 +106,10 @@ export function createContextForFunction(azFunction: AzureFunction, bindingDefin
     let doneCalled = false;
     if (httpOutput) {
         Object.assign(context, {
+            // The trailing `as HttpResponseFull` cast pins `this` inside the methods below;
+            // typescript-eslint's no-unnecessary-type-assertion only checks the receiver and
+            // misses that effect, so disable the rule for this object.
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             res: {
                 statusCode: 200,
                 headers: {},
